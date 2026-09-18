@@ -210,6 +210,38 @@ os dois do repositório e ignora o console. Vale saber que a própria AWS recome
 caminho oposto para os cabeçalhos: tirá-los do buildspec e mantê-los no console ou no
 `customHttp.yml`, nunca no `amplify.yml`.
 
+## Referências
+
+A documentação que foi consultada para montar cada parte deste repositório. Todos os links
+foram verificados.
+
+**AWS Amplify**
+
+- [Cabeçalhos personalizados — visão geral](https://docs.aws.amazon.com/amplify/latest/userguide/custom-headers.html)
+- [Definindo cabeçalhos personalizados](https://docs.aws.amazon.com/amplify/latest/userguide/setting-custom-headers.html) — o passo a passo do console e do `customHttp.yml`, e a regra de que o arquivo no repositório sobrescreve o console
+- [Formato do YAML de cabeçalhos](https://docs.aws.amazon.com/amplify/latest/userguide/custom-header-YAML-format.html) — as formas de `pattern` que são documentadas
+- [Migrando cabeçalhos para fora do buildspec](https://docs.aws.amazon.com/amplify/latest/userguide/migrate-custom-headers.html) — por que a AWS recomenda não deixá-los no `amplify.yml`
+- [Configurações de compilação](https://docs.aws.amazon.com/amplify/latest/userguide/build-settings.html) — inclui a precedência do `amplify.yml` sobre o console
+- [Imagem e ambiente de compilação](https://docs.aws.amazon.com/amplify/latest/userguide/using-build-image-settings.html)
+- [Variáveis de ambiente](https://docs.aws.amazon.com/amplify/latest/userguide/setting-env-vars.html)
+- [Domínio próprio via Route 53](https://docs.aws.amazon.com/amplify/latest/userguide/to-add-a-custom-domain-managed-by-amazon-route-53.html)
+
+**Fly.io**
+
+- [Referência do `fly.toml`](https://fly.io/docs/reference/configuration/)
+- [Servindo conteúdo estático](https://fly.io/docs/languages-and-frameworks/static/)
+
+**GitHub Pages**
+
+- [Escolhendo a origem de publicação](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) — é onde se troca de branch para **GitHub Actions**
+
+**Rust e WebAssembly**
+
+- [winged-rust](https://github.com/micheltlutz/winged-rust) — a biblioteca
+- [wasm-pack](https://rustwasm.github.io/docs/wasm-pack/) — o empacotador usado pelo `scripts/build.sh`
+- [wasm-bindgen](https://rustwasm.github.io/docs/wasm-bindgen/) — o que exporta `renderProfile` para o JavaScript
+- [Carregando e executando WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly/Guides/Loading_and_running) — por que o MIME importa no caminho `instantiateStreaming`
+
 ## Licença
 
 MIT, como o winged-rust.
