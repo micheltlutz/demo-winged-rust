@@ -29,6 +29,8 @@ pub struct Profile {
     pub headline: &'static str,
     /// A short paragraph. Two or three sentences is the right length for this layout.
     pub bio: &'static str,
+    /// A line worth pulling out of the bio and setting in a `<blockquote>`.
+    pub quote: &'static str,
     /// Avatar URL.
     pub avatar: &'static str,
     /// Alt text for the avatar — required by `image()` and checked by the a11y audit.
@@ -40,18 +42,28 @@ pub struct Profile {
 }
 
 /// The profile this build renders.
+///
+/// Content taken from <https://micheltlutz.me>.
 pub const PROFILE: Profile = Profile {
-    name: "Michel Anderson Lutz Teixeira",
+    name: "Michel Lütz",
     handle: "@micheltlutz",
-    headline: "Engenheiro de software — Swift, Rust e ferramentas que geram HTML.",
-    bio: "Autor do Winged-Swift e do winged-rust: a mesma biblioteca de geração de HTML \
-          escrita duas vezes, em duas linguagens, com paridade byte a byte verificada por \
-          fixtures compartilhadas. Esta página é a prova viva disso.",
+    headline: "Software Architect and AI Engineer",
+    bio: "Com mais de 18 anos em engenharia de software, trabalho na interseção entre \
+          arquitetura mobile, estratégia de engenharia e adoção responsável de GenAI. \
+          Software de missão crítica que continua manutenível depois que eu saio da sala.",
+    quote: "Arquitetura não é escolher a tecnologia mais nova. É garantir que, daqui a \
+            cinco anos, alguém que nunca conversou comigo consiga entender por que a \
+            decisão foi aquela, e mudá-la sem medo.",
     // GitHub serves every account's avatar from this path; no asset to commit.
     avatar: "https://github.com/micheltlutz.png?size=240",
-    avatar_alt: "Foto de perfil de Michel Anderson Lutz Teixeira",
-    location: "Brasil",
+    avatar_alt: "Foto de perfil de Michel Lütz",
+    location: "Porto Alegre, RS · remote-first",
     links: &[
+        Link {
+            label: "micheltlutz.me",
+            href: "https://micheltlutz.me",
+            note: "Arquitetura mobile, artigos e palestras",
+        },
         Link {
             label: "winged-rust",
             href: "https://github.com/micheltlutz/winged-rust",
@@ -68,22 +80,14 @@ pub const PROFILE: Profile = Profile {
             note: "Todo o resto do código aberto",
         },
         Link {
-            label: "crates.io",
-            href: "https://crates.io/crates/winged-rust",
-            // TODO: confirmar — o crate ainda não foi publicado (não existe tag v* no repo).
-            note: "O crate publicado",
-        },
-        Link {
-            label: "npm",
-            href: "https://www.npmjs.com/package/winged-rust",
-            // TODO: confirmar — publicado junto com o crate, pelo release.yml.
-            note: "O mesmo motor, empacotado como WebAssembly",
-        },
-        Link {
             label: "LinkedIn",
-            // TODO: confirmar a URL do perfil.
-            href: "https://www.linkedin.com/in/micheltlutz/",
+            href: "https://www.linkedin.com/in/michellutz/",
             note: "Trajetória profissional",
+        },
+        Link {
+            label: "YouTube",
+            href: "https://www.youtube.com/channel/UCfRIPuJSNaW2ZXUJWVpNpUg",
+            note: "Palestras e conteúdo técnico",
         },
         Link {
             label: "E-mail",
@@ -95,9 +99,10 @@ pub const PROFILE: Profile = Profile {
 
 /// Where this build will be served from.
 ///
-/// Set `DEMO_SITE_URL` at compile time to point the canonical link and the Open Graph tags
-/// somewhere else — each deploy target in the README exports its own.
+/// The default is the public home of the demo — every mirror points its canonical link
+/// here. Set `DEMO_SITE_URL` at compile time to override it, which is what the deploy
+/// targets in the README do when they need to name themselves instead.
 pub const SITE_URL: &str = match option_env!("DEMO_SITE_URL") {
     Some(url) => url,
-    None => "https://micheltlutz.github.io/demo-winged-rust",
+    None => "https://demo-winged-rust.micheltlutz.me",
 };

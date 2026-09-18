@@ -34,10 +34,12 @@ jobs:
           cargo fmt --all --check
           cargo clippy --all-targets -- -D warnings
 
+      # Pages is a mirror: the canonical link keeps naming the public home, so the two
+      # copies do not compete as duplicate content.
       - name: Build dist/
         run: ./scripts/build.sh
         env:
-          DEMO_SITE_URL: https://micheltlutz.github.io/demo-winged-rust
+          DEMO_SITE_URL: https://demo-winged-rust.micheltlutz.me
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

@@ -100,6 +100,21 @@ body {
     text-wrap: pretty;
 }
 
+.quote {
+    margin: 0;
+    padding: 18px 20px;
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    background: var(--accent-soft);
+    color: var(--text);
+    font-size: 0.9375rem;
+    text-wrap: pretty;
+}
+
+.quote p {
+    margin: 0;
+}
+
 /* --- links -------------------------------------------------------------- */
 
 .links ul {

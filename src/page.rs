@@ -37,8 +37,6 @@ pub fn document() -> Document {
             .site_name(PROFILE.name)
             .author(PROFILE.name)
             .keywords(["winged-rust", "rust", "webassembly", "html", "about.me"])
-            .twitter_site(PROFILE.handle)
-            .twitter_creator(PROFILE.handle)
             .build(),
         )
         .head_children([
@@ -56,6 +54,7 @@ pub fn document() -> Document {
         .body_children([
             div().add_class("shell").children_from([
                 profile_header(),
+                pull_quote(),
                 link_list(),
                 parity_panel(),
                 page_footer(),
@@ -85,6 +84,13 @@ fn profile_header() -> Element {
         )
         .child(p().add_class("headline").text(PROFILE.headline))
         .child(p().add_class("bio").text(PROFILE.bio))
+}
+
+/// The line from the bio that deserves its own space.
+fn pull_quote() -> Element {
+    blockquote()
+        .add_class("quote")
+        .child(p().text(PROFILE.quote))
 }
 
 /// The list of links, one row per [`Link`] in [`PROFILE`].

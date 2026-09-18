@@ -1,5 +1,7 @@
 # demo-winged-rust
 
+**Ao vivo: <https://demo-winged-rust.micheltlutz.me>**
+
 Uma página *about.me* — avatar, bio, lista de links e rodapé — escrita em Rust com
 [winged-rust](https://github.com/micheltlutz/winged-rust) e renderizada **duas vezes**:
 
@@ -7,7 +9,7 @@ Uma página *about.me* — avatar, bio, lista de links e rodapé — escrita em 
 2. no seu navegador, pelo mesmo código compilado para WebAssembly.
 
 A página compara os dois resultados byte a byte e mostra o veredito. Hoje, com este
-conteúdo, são **13.062 bytes idênticos** e um módulo de **43 KB (≈20 KB gzipped)**.
+conteúdo, são **13.292 bytes idênticos** e um módulo de **43,4 KB (≈20 KB gzipped)**.
 
 Não há framework, runtime, template nem hidratação. O HTML que chega ao navegador já está
 completo — o WebAssembly só existe para provar que ele poderia ter sido gerado ali mesmo.
@@ -78,7 +80,9 @@ três destinos abaixo sem reescrita — inclusive sob um subcaminho como
 `/demo-winged-rust/`.
 
 Em todos eles, `DEMO_SITE_URL` é lido **em tempo de compilação** e define o
-`<link rel="canonical">` e as tags `og:*`. Mudou o domínio, refaça o build.
+`<link rel="canonical">`, as tags `og:*` e o `sitemap.xml`. Mudou o domínio, refaça o
+build. Sem a variável, o padrão é `https://demo-winged-rust.micheltlutz.me`, a casa
+pública do demo — os outros destinos são espelhos e apontam o canonical para lá.
 
 ### GitHub Pages
 
@@ -118,17 +122,76 @@ docker build -f deploy/Dockerfile -t winged-demo .
 docker run --rm -p 8080:80 winged-demo
 ```
 
+> **Por que o `fly.toml` está versionado e o `amplify.yml` não.** O `fly deploy` lê o
+> `fly.toml` do diretório de trabalho — sem ele no repositório, não há deploy reproduzível.
+> O Amplify é o contrário: guarda a configuração no console e só a ignora quando existe um
+> arquivo no repositório, que então sobrescreve o console a cada push.
+>
+> O `fly.toml` daqui não carrega segredo nenhum — só o nome do app, a região e o tamanho da
+> máquina. Tokens ficam no `flyctl`, nunca no arquivo. Se você clonou isto para publicar a
+> sua própria cópia, troque `app` por um nome livre e `build.args.DEMO_SITE_URL` pelo seu
+> domínio, ou apague o arquivo e deixe o `fly launch` gerar um do zero.
+
 ### AWS Amplify
 
-Conecte o repositório e o Amplify lê [`amplify.yml`](amplify.yml): o `preBuild` instala
-rustup e wasm-pack, o `build` roda `./scripts/build.sh`, e `dist/` vira o artefato. O
-`DEMO_SITE_URL` é montado a partir de `$AWS_BRANCH`/`$AWS_APP_ID`; com domínio próprio,
-troque por ele. O bloco `customHeaders` fixa o MIME do `.wasm`.
+**Este repositório não tem `amplify.yml` de propósito.** O Amplify dá precedência ao
+arquivo do repositório sobre as configurações do console — com ele versionado, todo push
+sobrescreve o que você ajustar na interface. Aqui a configuração mora só no console, e o
+repositório fica com o código.
 
+Conecte o repositório e, em **App settings → Build settings → Edit**, cole:
 
+```yaml
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal
+        - source "$HOME/.cargo/env"
+        - curl -sSf https://rustwasm.github.io/wasm-pack/installer/init.sh | sh
+    build:
+      commands:
+        - source "$HOME/.cargo/env"
+        - export DEMO_SITE_URL="${DEMO_SITE_URL:-https://$AWS_BRANCH.$AWS_APP_ID.amplifyapp.com}"
+        - ./scripts/build.sh
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - $HOME/.cargo/registry/**/*
+      - $HOME/.cargo/git/**/*
+      - target/**/*
+```
 
-O cache de `~/.cargo` e `target/` está configurado — o primeiro build leva alguns minutos,
-os seguintes são rápidos.
+Em **App settings → Custom headers**, cole:
+
+```yaml
+customHeaders:
+  - pattern: '**/*.wasm'
+    headers:
+      - key: Content-Type
+        value: application/wasm
+```
+
+Duas notas:
+
+- Este demo roda em `demo-winged-rust.micheltlutz.me`, apontado para a branch `main`.
+  Depois de mapear o domínio em **App settings → Domain management**, defina
+  `DEMO_SITE_URL = https://demo-winged-rust.micheltlutz.me` em **App settings →
+  Environment variables** — ele é lido em tempo de compilação e define o
+  `<link rel="canonical">`, as tags `og:*` e o `sitemap.xml`.
+- Sem essa variável, o buildspec cai na URL da branch
+  (`$AWS_BRANCH.$AWS_APP_ID.amplifyapp.com`), que é o que você quer em branches de
+  preview.
+- O cache de `~/.cargo` e `target/` está no bloco acima: o primeiro build leva alguns
+  minutos instalando o toolchain, os seguintes são rápidos.
+
+Se você preferir versionar mesmo assim — num fork, por exemplo —, é só salvar o primeiro
+bloco como `amplify.yml` na raiz e o segundo como `customHttp.yml`. O Amplify passa a ler
+os dois do repositório e ignora o console.
 
 ## Licença
 
