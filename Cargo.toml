@@ -1,0 +1,53 @@
+[package]
+name = "winged-demo"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+authors = ["Michel Anderson Lutz Teixeira <michel@micheltlutz.me>"]
+description = "About.me page built with winged-rust, rendered natively and in WebAssembly"
+repository = "https://github.com/micheltlutz/demo-winged-rust"
+license = "MIT"
+publish = false
+
+# `cdylib` is what wasm-pack packages; `rlib` is what the `build-site` binary links.
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["site"]
+# Native build: writes dist/ to disk.
+site = ["winged-rust/ssg"]
+# Browser build: exports render_profile() through wasm-bindgen.
+wasm = ["dep:wasm-bindgen"]
+
+[dependencies]
+# winged-rust is not on crates.io yet (no v* tag exists), so the demo tracks the repo.
+# Swap `branch` for `rev` to pin a build. To work on both repos at once, uncomment the
+# [patch] block at the bottom.
+winged-rust = { git = "https://github.com/micheltlutz/winged-rust", branch = "main", default-features = false }
+wasm-bindgen = { version = "0.2", optional = true }
+
+# `required-features` keeps the binary out of the wasm32 build: wasm-pack passes
+# --no-default-features --features wasm, so `site` is off and cargo skips this target.
+[[bin]]
+name = "build-site"
+path = "src/bin/build_site.rs"
+required-features = ["site"]
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[lints.rust]
+missing_docs = "deny"
+unsafe_code = "forbid"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+must_use_candidate = "allow"
+
+# Local development against a checkout of the library:
+# [patch."https://github.com/micheltlutz/winged-rust"]
+# winged-rust = { path = "../winged-rust" }

@@ -1,0 +1,22 @@
+# fly launch --no-deploy   (uma vez, para criar o app)
+# fly deploy
+app = "winged-demo"
+primary_region = "gru"
+
+[build]
+  dockerfile = "deploy/Dockerfile"
+
+  [build.args]
+    # Troque pelo domínio real do app antes do primeiro deploy.
+    DEMO_SITE_URL = "https://winged-demo.fly.dev"
+
+[http_service]
+  internal_port = 80
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
