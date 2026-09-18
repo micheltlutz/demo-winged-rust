@@ -139,7 +139,11 @@ arquivo do repositório sobre as configurações do console — com ele versiona
 sobrescreve o que você ajustar na interface. Aqui a configuração mora só no console, e o
 repositório fica com o código.
 
-Conecte o repositório e, em **App settings → Build settings → Edit**, cole:
+Conecte o repositório e a branch `main`. Os itens abaixo ficam todos no menu **Hosting**
+do console, e só aparecem depois que o app está ligado ao repositório git — antes disso não
+há o que configurar.
+
+Em **Hosting → Build settings → Edit**, cole:
 
 ```yaml
 version: 1
@@ -166,7 +170,7 @@ frontend:
       - target/**/*
 ```
 
-Em **App settings → Custom headers**, cole:
+Em **Hosting → Custom headers → Edit**, cole:
 
 ```yaml
 customHeaders:
@@ -176,12 +180,12 @@ customHeaders:
         value: application/wasm
 ```
 
-Duas notas:
+Três notas:
 
 - Este demo roda em `demo-winged-rust.micheltlutz.me`, apontado para a branch `main`.
-  Depois de mapear o domínio em **App settings → Domain management**, defina
-  `DEMO_SITE_URL = https://demo-winged-rust.micheltlutz.me` em **App settings →
-  Environment variables** — ele é lido em tempo de compilação e define o
+  Depois de mapear o domínio em **Hosting → Custom domains**, defina
+  `DEMO_SITE_URL = https://demo-winged-rust.micheltlutz.me` em **Hosting →
+  Environment variables → Manage variables** — ele é lido em tempo de compilação e define o
   `<link rel="canonical">`, as tags `og:*` e o `sitemap.xml`.
 - Sem essa variável, o buildspec cai na URL da branch
   (`$AWS_BRANCH.$AWS_APP_ID.amplifyapp.com`), que é o que você quer em branches de
@@ -191,7 +195,9 @@ Duas notas:
 
 Se você preferir versionar mesmo assim — num fork, por exemplo —, é só salvar o primeiro
 bloco como `amplify.yml` na raiz e o segundo como `customHttp.yml`. O Amplify passa a ler
-os dois do repositório e ignora o console.
+os dois do repositório e ignora o console. Vale saber que a própria AWS recomenda o
+caminho oposto para os cabeçalhos: tirá-los do buildspec e mantê-los no console ou no
+`customHttp.yml`, nunca no `amplify.yml`.
 
 ## Licença
 
