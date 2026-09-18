@@ -139,9 +139,9 @@ arquivo do repositório sobre as configurações do console — com ele versiona
 sobrescreve o que você ajustar na interface. Aqui a configuração mora só no console, e o
 repositório fica com o código.
 
-Conecte o repositório e a branch `main`. Os itens abaixo ficam todos no menu **Hosting**
-do console, e só aparecem depois que o app está ligado ao repositório git — antes disso não
-há o que configurar.
+Conecte o repositório e a branch `main` e conclua a criação do app. **Nada disto está no
+assistente de criação** — os itens abaixo vivem no menu **Hosting** (*Hospedagem*, no
+console em português) e só existem depois que o app foi criado.
 
 Em **Hosting → Build settings → Edit**, cole:
 
@@ -170,15 +170,26 @@ frontend:
       - target/**/*
 ```
 
-Em **Hosting → Custom headers → Edit**, cole:
+Em **Hosting → Custom headers** (*Hospedagem → Cache e cabeçalhos personalizados*) →
+**Edit**, cole:
 
 ```yaml
 customHeaders:
-  - pattern: '**/*.wasm'
+  - pattern: '/pkg/*.wasm'
     headers:
       - key: Content-Type
         value: application/wasm
 ```
+
+O `pattern` segue a forma `'/path/*.ext'` da [referência da
+AWS](https://docs.aws.amazon.com/amplify/latest/userguide/custom-header-YAML-format.html),
+que é a documentada para casar extensão dentro de um diretório. Salvar não basta: é preciso
+um **redeploy** para o cabeçalho valer.
+
+Vale dizer que isto é cinto-e-suspensório. O `boot.js` instancia o módulo a partir de um
+`ArrayBuffer`, então a página funciona mesmo sem o cabeçalho — ele existe para quem trocar
+o `boot.js` pelo caminho normal (`instantiateStreaming`), que recusa qualquer MIME que não
+seja `application/wasm`.
 
 Três notas:
 
